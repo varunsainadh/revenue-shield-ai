@@ -8,13 +8,19 @@ import {
   BarChart3, 
   Settings as SettingsIcon,
   Shield,
-  Zap
+  Zap,
+  Sparkles,
+  AlertTriangle,
+  FileText
 } from 'lucide-react';
 
 export default function Sidebar({ activeTab, setActiveTab, appMode = 'mock', useRazorpay = false }) {
   const navItems = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'copilot', label: 'AI Copilot', icon: Sparkles, badge: 'RAG' },
     { id: 'cases', label: 'Recovery Cases', icon: FolderKanban },
+    { id: 'chargebacks', label: 'Chargeback Risk', icon: ShieldAlert, badge: 'XAI' },
+    { id: 'fraud', label: 'Fraud & Refund Alerts', icon: AlertTriangle },
     { id: 'agent', label: 'Recovery Agent', icon: Bot },
     { id: 'review', label: 'Manual Review', icon: ShieldAlert },
     { id: 'audit', label: 'Audit Trail', icon: History },
@@ -47,14 +53,21 @@ export default function Sidebar({ activeTab, setActiveTab, appMode = 'mock', use
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   isActive 
                     ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20 shadow-sm' 
                     : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-sky-400' : 'text-slate-400'}`} />
-                <span>{item.label}</span>
+                <div className="flex items-center space-x-3">
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-sky-400' : 'text-slate-400'}`} />
+                  <span>{item.label}</span>
+                </div>
+                {item.badge && (
+                  <span className="text-[10px] bg-sky-500/20 text-sky-300 font-mono font-bold px-1.5 py-0.5 rounded">
+                    {item.badge}
+                  </span>
+                )}
               </button>
             );
           })}

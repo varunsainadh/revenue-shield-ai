@@ -88,3 +88,57 @@ export async function seedDemoData() {
   const res = await fetch(`${BASE_URL}/demo/seed`, { method: 'POST' });
   return res.json();
 }
+
+/* --- NEW API ENDPOINTS FOR PLATFORM UPGRADE --- */
+
+export async function fetchChargebacks() {
+  const res = await fetch(`${BASE_URL}/chargebacks`);
+  return res.json();
+}
+
+export async function predictChargeback(data) {
+  const res = await fetch(`${BASE_URL}/chargebacks/predict`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+}
+
+export async function fetchFraudAlerts(status = null) {
+  const url = status ? `${BASE_URL}/fraud/alerts?status=${status}` : `${BASE_URL}/fraud/alerts`;
+  const res = await fetch(url);
+  return res.json();
+}
+
+export async function resolveFraudAlert(id, status = 'RESOLVED', notes = '') {
+  const res = await fetch(`${BASE_URL}/fraud/alerts/${id}/resolve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, resolution_notes: notes })
+  });
+  return res.json();
+}
+
+export async function askCopilot(query) {
+  const res = await fetch(`${BASE_URL}/copilot/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query })
+  });
+  return res.json();
+}
+
+export async function fetchRefunds() {
+  const res = await fetch(`${BASE_URL}/refunds`);
+  return res.json();
+}
+
+export async function processRefund(payment_id, amount, reason = '') {
+  const res = await fetch(`${BASE_URL}/razorpay/refund`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ payment_id, amount, reason })
+  });
+  return res.json();
+}

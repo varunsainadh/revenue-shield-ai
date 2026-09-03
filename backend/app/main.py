@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from app.config import settings
 from app.database import init_db, SessionLocal
-from app.api import health, cases, recovery, analytics, audit, settings as settings_api, webhooks
+from app.api import health, cases, recovery, analytics, audit, settings as settings_api, webhooks, chargebacks, fraud, copilot, refunds
 from app.services.recovery_service import RecoveryService
 
 @asynccontextmanager
@@ -67,6 +67,10 @@ app.include_router(analytics.router, prefix="/api", tags=["Analytics"])
 app.include_router(audit.router, prefix="/api", tags=["Audit Trail"])
 app.include_router(settings_api.router, prefix="/api", tags=["Settings"])
 app.include_router(webhooks.router, prefix="/api", tags=["Webhooks & Demo"])
+app.include_router(chargebacks.router, prefix="/api", tags=["Chargebacks"])
+app.include_router(fraud.router, prefix="/api", tags=["Fraud & Anomaly Alerts"])
+app.include_router(copilot.router, prefix="/api", tags=["AI Financial Copilot"])
+app.include_router(refunds.router, prefix="/api", tags=["Razorpay Refunds"])
 
 # Mock Checkout Payment Portal Page Endpoint
 @app.get("/demo/pay/{case_id}", response_class=HTMLResponse)

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Overview from './pages/Overview';
+import Copilot from './pages/Copilot';
 import Cases from './pages/Cases';
+import Chargebacks from './pages/Chargebacks';
+import FraudAlerts from './pages/FraudAlerts';
 import CaseDetails from './pages/CaseDetails';
 import RecoveryAgent from './pages/RecoveryAgent';
 import ManualReview from './pages/ManualReview';
@@ -124,8 +127,13 @@ export default function App() {
             analytics={analytics} 
             onSelectCase={(c) => setSelectedCase(c)}
             onSeedData={handleSeedData}
+            onOpenCopilot={() => setActiveTab('copilot')}
             loading={loading}
           />
+        )}
+
+        {activeTab === 'copilot' && (
+          <Copilot />
         )}
 
         {activeTab === 'cases' && (
@@ -135,6 +143,14 @@ export default function App() {
             onAnalyzeCase={handleAnalyzeCase}
             onExecuteRecovery={handleExecuteRecovery}
           />
+        )}
+
+        {activeTab === 'chargebacks' && (
+          <Chargebacks />
+        )}
+
+        {activeTab === 'fraud' && (
+          <FraudAlerts />
         )}
 
         {activeTab === 'agent' && (

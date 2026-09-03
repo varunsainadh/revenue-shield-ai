@@ -76,7 +76,24 @@ def seed_demo_data(db: Session = Depends(get_db)):
             })
             seeded_count += 1
 
-    return {"status": "success", "message": f"Seeded {seeded_count} payment failure records into SQLite database."}
+    # Seed Chargeback Predictions with XAI factors
+    from app.services.chargeback_service import ChargebackService
+    cb_service = ChargebackService(db)
+    cb_scenarios = [
+        {"transaction_id": "tx_cb_101", "customer_id": "cust_9821", "amount": 24999.0, "is_first_time_customer": True, "previous_failure_count": 3, "risk_level": "CRITICAL", "failure_reason": "fraud_suspected"},
+        {"transaction_id": "tx_cb_102", "customer_id": "cust_4312", "amount": 18500.0, "is_first_time_customer": True, "previous_failure_count": 2, "risk_level": "HIGH", "failure_reason": "authentication_failed"},
+        {"transaction_id": "tx_cb_103", "customer_id": "cust_1102", "amount": 2499.0, "is_first_time_customer": False, "previous_failure_count": 0, "risk_level": "LOW", "failure_reason": "incorrect_pin"},
+    ]
+    for cb_s in cb_scenarios:
+        cb_service.predict_and_store(cb_s)
+
+    # Seed Refunds & Fraud Alerts
+    from app.services.razorpay_service import RazorpayService
+    rzp_service = RazorpayService(db)
+    rzp_service.process_refund("pay_tx_100005", 1499.0, "Customer cancellation")
+    rzp_service.process_refund("pay_tx_100005", 1499.0, "Duplicate request attempt")
+
+    return {"status": "success", "message": f"Seeded {seeded_count} cases, chargeback predictions, and fraud alerts into SQLite database."}
 
 @router.post("/webhooks/razorpay")
 async def razorpay_webhook(
