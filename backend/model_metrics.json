@@ -1,0 +1,47 @@
+{
+  "trained_at": "2026-09-02T18:08:25.378029",
+  "dataset_size": 1000,
+  "random_seed": 42,
+  "test_split_ratio": 0.2,
+  "models": {
+    "email": {
+      "accuracy": 0.6,
+      "precision": 0.5968,
+      "recall": 0.7115,
+      "f1": 0.6491,
+      "roc_auc": 0.6141,
+      "confusion_matrix": {
+        "true_negatives": 46,
+        "false_positives": 50,
+        "false_negatives": 30,
+        "true_positives": 74
+      }
+    },
+    "whatsapp": {
+      "accuracy": 0.805,
+      "precision": 0.8046,
+      "recall": 0.9655,
+      "f1": 0.8777,
+      "roc_auc": 0.774,
+      "confusion_matrix": {
+        "true_negatives": 21,
+        "false_positives": 34,
+        "false_negatives": 5,
+        "true_positives": 140
+      }
+    },
+    "voice": {
+      "accuracy": 0.655,
+      "precision": 0.6237,
+      "recall": 0.6304,
+      "f1": 0.627,
+      "roc_auc": 0.7347,
+      "confusion_matrix": {
+        "true_negatives": 73,
+        "false_positives": 35,
+        "false_negatives": 34,
+        "true_positives": 58
+      }
+    }
+  }
+}
