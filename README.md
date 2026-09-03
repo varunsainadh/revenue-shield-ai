@@ -1,226 +1,195 @@
-# RevenueShield AI — Autonomous AI Revenue Recovery Engine
+# RevenueShield AI — Autonomous AI Revenue Protection & Recovery Platform
 
-> **Tagline:** *"Detect. Decide. Recover. Measure."*  
-> **Buildathon:** Razorpay AI Buildathon — **Track 3: AI Revenue Recovery**
+"Detect. Decide. Recover. Measure."
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-009688.svg)](https://fastapi.tiangolo.com/)
-[![React 18](https://img.shields.io/badge/React-18-61dafb.svg)](https://reactjs.org/)
-[![Razorpay](https://img.shields.io/badge/Razorpay-Test%20Mode-blueviolet.svg)](https://razorpay.com/)
+[![Razorpay AI Buildathon](https://img.shields.io/badge/Razorpay%20AI%20Buildathon-Track%203%20%E2%80%94%20AI%20Revenue%20Recovery-blue.svg)](https://razorpay.com)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18.3-61DAFB.svg?logo=react&logoColor=black)](https://react.dev)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5-F7931E.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
----
-
-## Executive Summary
-
-**RevenueShield AI** is an autonomous, production-ready AI revenue recovery system built for merchants using Razorpay. It ingests failed payment events, diagnoses root cause failure categories, scores channel recovery probabilities using machine learning models, calculates Expected Recovery Value (ERV), enforces strict financial and compliance policy guardrails, executes bounded recovery workflows via Razorpay Test Mode payment links, and measures net recovered revenue.
+An autonomous AI-powered revenue protection platform designed for **Razorpay** merchants. RevenueShield AI proactively predicts pre-dispute chargeback risk with Explainable AI (XAI), detects refund abuse anomalies, orchestrates multi-agent recovery workflows, enforces financial policy guardrails, and provides an AI Financial Copilot (RAG + LLM) for merchant Q&A.
 
 ---
 
-## Key Architectural Principle
+## Key Features & Platform Capabilities
 
+### 1. AI Chargeback Prediction Engine (XAI)
+- **Pre-Dispute ML Model:** Predicts chargeback risk scores ($0–100\%$) before disputes occur using trained `GradientBoostingClassifier` models.
+- **Explainable AI (XAI) Risk Factors:** Pinpoints key contributing risk drivers:
+  - *First-time customer status*
+  - *High transaction value ($\ge$ ₹15,000)*
+  - *Multiple failed payment attempts*
+  - *Unusual purchase patterns / risk flags*
+
+### 2. Fraud & Refund Abuse Detection System
+- **Anomaly Detection:** Identifies malicious customer behavior and refund abuse:
+  - **Refund Abuse:** Flags accounts requesting $> 3$ refunds within a short timeframe.
+  - **Duplicate Refunds:** Intercepts identical refund attempts on the same payment.
+  - **Refund Spikes:** Triggers critical alerts if daily refunds exceed $3\times$ historical baseline.
+
+### 3. AI Financial Copilot (RAG + LLM)
+- **Interactive Merchant Chat:** Answers complex financial and operational questions:
+  - *"Why did revenue decrease?"*
+  - *"Which customers are high risk?"*
+  - *"What refunds look suspicious?"*
+  - *"What revenue is recoverable?"*
+- **RAG & Multi-Agent Synthesis:** Pulls real-time database context, metrics, and audit logs to generate actionable business insights and suggested recovery actions.
+
+### 4. Multi-Agent Shared Workflow
+- **Coordinated Intelligence:**
+  - `FraudAgent`: Scans velocity, duplicate refunds, and anomaly risk.
+  - `ChargebackAgent`: Predicts dispute probabilities and attributes risk factors.
+  - `RecoveryAgent`: Scores channel ERVs (Email / WhatsApp / Voice) and executes outreach.
+  - `CopilotAgent`: Answers business Q&A and generates strategic insights.
+
+### 5. Deterministic Policy Guardrail Engine
+- **Financial Safety Principles:** *"AI recommends. Policy validates. System executes. Human approves."*
+- **Policies Enforced:**
+  - `HighValueApprovalPolicy`: Intercepts cases $\ge$ ₹15,000 for merchant manual review.
+  - `FraudRiskPolicy`: Immediately blocks outreach for high/critical fraud risk.
+  - `MaximumAttemptsPolicy`: Enforces max 3 recovery attempts per case.
+  - `QuietHoursPolicy`: Mutes voice calls between 21:00 and 09:00 IST.
+
+### 6. Deepened Razorpay Integration
+- Integrated Razorpay Payments, Orders, Refunds, and Webhooks APIs with HMAC SHA256 signature verification.
+- **100% Mock Mode Fallback:** Runs completely offline without requiring live API keys or external tunnels.
+
+---
+
+## High-Level System Architecture
+
+```mermaid
+graph TD
+    SubGraph1[Transaction Event Sources] -->|Webhook / API| API[FastAPI Ingestion Endpoint]
+    API --> Service[Recovery & Security Services]
+    Service --> DB[(SQLite / PostgreSQL DB)]
+
+    subgraph Multi-Agent Shared Workflow
+        Service --> SharedWorkflow[Multi-Agent Orchestrator]
+        SharedWorkflow --> FraudAgent[1. Fraud Detection Agent]
+        SharedWorkflow --> ChargebackAgent[2. Chargeback Prediction Agent]
+        SharedWorkflow --> RecoveryAgent[3. Revenue Recovery Agent]
+        SharedWorkflow --> CopilotAgent[4. Financial Copilot Agent]
+    end
+
+    subgraph ML & Intelligence Layer
+        FraudAgent --> AnomalyDetect[Refund Abuse & Spike Anomaly Detector]
+        ChargebackAgent --> XAIPredictor[Chargeback Risk Score + XAI Attribution]
+        RecoveryAgent --> MLScoring[GradientBoosting Channel Scoring & ERV Engine]
+        CopilotAgent --> RAGRetriever[RAG Context Retriever + LLM Summarizer]
+    end
+
+    subgraph Policy Guardrails & Action
+        XAIPredictor --> Guardrails[Deterministic Policy Guardrails]
+        MLScoring --> Guardrails
+        Guardrails -->|Amount >= 15k| Manual[Merchant Manual Review Queue]
+        Guardrails -->|Fraud / Max Attempts| Block[Block Automation]
+        Guardrails -->|Approved| Exec[Razorpay Test Mode Payment Link / Refund]
+    end
+
+    subgraph Real-Time Operations UI
+        Exec --> Dashboard[React Operations Dashboard & AI Copilot Chat]
+        Manual --> Dashboard
+        CopilotAgent --> Dashboard
+    end
 ```
-┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐       ┌─────────────────┐
-│   AI MODELS     │  ──>  │  POLICY ENGINE  │  ──>  │ SYSTEM EXECUTES │  ──>  │ HUMAN APPROVES  │
-│  (Recommends)   │       │   (Validates)   │       │  (Payment Link) │       │ (High-Value /   │
-└─────────────────┘       └─────────────────┘       └─────────────────┘       │    Restricted)  │
-                                                                              └─────────────────┘
-```
-
-> **Financial Safety Guarantee:** Never allow an LLM or ML model to directly execute unrestricted financial actions. All AI recommendations must be validated by deterministic financial policy guardrails before execution.
 
 ---
 
-## Core Product Flow
-
-```
-Payment Fails (Gateway/Bank)
-         │
-         ▼
-Failure Event Ingested & Recovery Case Created
-         │
-         ▼
-Root Cause Failure Classification (CUSTOMER_CORRECTABLE, INSUFFICIENT_FUNDS, etc.)
-         │
-         ▼
-Feature Extraction & ML Channel Scoring (EMAIL, WHATSAPP, VOICE)
-         │
-         ▼
-Expected Recovery Value (ERV = Probability × Amount) Calculated
-         │
-         ▼
-Best Recovery Strategy Proposed by RecoveryAgent
-         │
-         ▼
-Policy Engine Validation (Quiet Hours, Max Attempts, High-Value Threshold, Risk Block)
-         │
-         ├───────────────────────┬───────────────────────┐
-         ▼                       ▼                       ▼
-   [APPROVED]             [MANUAL REVIEW]            [BLOCKED]
-  Action Executed        Merchant Approves        Automation Stopped
-         │                       │
-         ▼                       ▼
-Razorpay Payment Link Created (Test Mode or Mock Checkout Portal)
-         │
-         ▼
-Customer Completes Payment via Link
-         │
-         ▼
-Razorpay Webhook (payment_link.paid / payment.captured) Verified via HMAC SHA256
-         │
-         ▼
-Recovery Case Marked RECOVERED & Analytics/Audit Logs Updated
-```
-
----
-
-## Key Features
-
-### 1. Root Cause Classification
-Maps raw bank/gateway error codes into actionable categories:
-- `CUSTOMER_CORRECTABLE` (e.g., `incorrect_pin`, `authentication_failed`)
-- `INSUFFICIENT_FUNDS` (e.g., `insufficient_funds`, `balance_low`)
-- `PAYMENT_METHOD_PROBLEM` (e.g., `card_expired`, `bank_declined`)
-- `TEMPORARY_INFRASTRUCTURE` (e.g., `bank_down`, `gateway_timeout`)
-- `RISK_RELATED` (e.g., `fraud_suspected`, `risk_declined`)
-
-### 2. ML Channel Scoring & ERV Engine
-Uses scikit-learn classifiers (`GradientBoostingClassifier` with `ColumnTransformer` preprocessing) to estimate channel recovery probabilities:
-$$\text{ERV}_{\text{channel}} = P(\text{recovery}_{\text{channel}}) \times \text{Amount}$$
-$$\text{Net ERV}_{\text{channel}} = \text{ERV}_{\text{channel}} - \text{simulated\_cost}_{\text{channel}}$$
-
-- **Simulated Intervention Costs:** Email = ₹2, WhatsApp = ₹5, Voice = ₹15.
-- **Selection:** Automatically recommends the channel yielding the highest Net ERV.
-
-### 3. Financial & Compliance Guardrail Engine
-Deterministic policy checks evaluated before any execution:
-- **`HighValueApprovalPolicy`:** Transactions $\ge$ ₹15,000 require manual human approval.
-- **`FraudRiskPolicy`:** Risk level `HIGH`/`CRITICAL` or `fraud_suspected` immediately blocks automation.
-- **`MaximumAttemptsPolicy`:** Maximum 3 recovery attempts permitted per case.
-- **`QuietHoursPolicy`:** Voice outreach blocked during quiet hours (21:00 to 09:00 IST).
-- **`ActivePromiseToPayPolicy`:** Outreach suppressed if customer has active PTP schedule.
-
-### 4. Razorpay Test Mode & Built-in Mock Checkout
-- Creates real Razorpay Test Mode Payment Links (`rzp_test_...`) when keys are configured.
-- Provides a built-in mock checkout portal (`/demo/pay/{case_id}`) for offline demonstration without requiring external tunnels or live credentials.
-- Signature verification (`X-Razorpay-Signature` HMAC SHA256) and webhook idempotency protection.
-
----
-
-## Machine Learning Evaluation
-
-Evaluated on 1,000 synthetic payment failure records generated via `scripts/generate_dataset.py` (Fixed seed: `42`):
-
-| Channel | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| **EMAIL** | 0.6000 | 0.5968 | 0.7115 | 0.6491 | 0.6141 |
-| **WHATSAPP** | 0.8050 | 0.8046 | 0.9655 | 0.8777 | 0.7740 |
-| **VOICE** | 0.6550 | 0.6237 | 0.6304 | 0.6270 | 0.7347 |
-
----
-
-## Quickstart Guide
+## Quickstart & Local Setup
 
 ### Prerequisites
-- Python 3.10+
+- Python 3.11+
 - Node.js 18+
 
-### 1. Setup Backend
+### 1. Clone Repository
 ```bash
-# Navigate to backend directory
+git clone git@github.com:varunsainadh/revenue-shield-ai.git
+cd revenue-shield-ai
+```
+
+### 2. Start Backend Server
+```bash
 cd backend
+python -m venv .venv
+# On Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source .venv/bin/activate
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Run Pytest suite
-pytest
-
-# Train ML channel scoring models
-python ../scripts/train_model.py
-
-# Start FastAPI backend server
 uvicorn app.main:app --reload --port 8000
 ```
+- **Backend API Docs (Swagger):** `http://localhost:8000/docs`
+- **Backend Health Check:** `http://localhost:8000/api/health`
 
-### 2. Setup Frontend Dashboard
+### 3. Start Frontend Operations Dashboard
+In a new terminal window:
 ```bash
-# Navigate to frontend directory
 cd frontend
-
-# Install dependencies
 npm install
-
-# Start Vite React dev server
 npm run dev
 ```
-Open **`http://localhost:3000`** in your browser to interact with the dashboard.
+- **Frontend Dashboard:** `http://localhost:3000`
 
 ---
 
-## Project Structure
+## ML Model Training & Evaluation
+
+```bash
+# 1. Regenerate 1,000 synthetic payment & refund dataset records (Seed: 42)
+python scripts/generate_dataset.py
+
+# 2. Train scikit-learn classifiers (Email, WhatsApp, Voice) & save artifacts
+python scripts/train_model.py
+
+# 3. Evaluate ML model metrics & ERV yields
+python scripts/evaluate_model.py
+
+# 4. Run automated Pytest test suite (18/18 tests passing)
+cd backend && pytest
+```
+
+---
+
+## Folder Structure
 
 ```
 RevenueShield/
-├── README.md
-├── LICENSE
-├── .gitignore
-├── .env.example
-├── architecture.md
+├── README.md                              # Main Documentation
+├── LICENSE                                # MIT License
+├── architecture.md                        # Architectural specification & Mermaid diagrams
 ├── backend/
-│   ├── pytest.ini
-│   ├── requirements.txt
-│   ├── model_metrics.json
-│   ├── models_ml/
-│   │   ├── email_recovery_model.joblib
-│   │   ├── whatsapp_recovery_model.joblib
-│   │   └── voice_recovery_model.joblib
+│   ├── pytest.ini                         # Pytest configuration
+│   ├── requirements.txt                   # Backend dependencies
+│   ├── model_metrics.json                 # Machine-readable ML evaluation metrics
+│   ├── models_ml/                         # Trained ML model pipeline artifacts
 │   └── app/
-│       ├── main.py
-│       ├── config.py
-│       ├── database.py
-│       ├── domain/
-│       ├── models/
-│       ├── schemas/
-│       ├── services/
-│       ├── agents/
-│       ├── ml/
-│       ├── api/
-│       └── tests/
-├── frontend/
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── tailwind.config.js
-│   └── src/
-│       ├── components/
-│       ├── pages/
-│       └── services/
-├── data/
-│   ├── transactions.csv
-│   └── recovery_training_data.csv
-├── scripts/
-│   ├── generate_dataset.py
-│   ├── train_model.py
-│   ├── evaluate_model.py
-│   └── run_batch_recovery.py
-└── docs/
-    ├── demo-script.md
-    └── evaluation.md
+│       ├── main.py                        # FastAPI application entry point
+│       ├── config.py                      # Pydantic BaseSettings environment config
+│       ├── database.py                    # SQLAlchemy ORM engine & Session setup
+│       ├── domain/                        # Domain models & state machines
+│       ├── models/                        # SQLAlchemy database models
+│       ├── schemas/                       # Pydantic validation schemas
+│       ├── services/                      # Business logic service layer
+│       ├── agents/                        # Multi-agent orchestrator & Copilot RAG
+│       ├── ml/                            # Chargeback XAI & Fraud Anomaly Detector
+│       ├── api/                           # REST API routers
+│       └── tests/                         # Pytest test suite (18 tests)
+├── frontend/                              # Vite + React + Tailwind CSS Dashboard
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/                         # Overview, Copilot, Cases, Chargebacks, FraudAlerts...
+│   │   └── services/                      # API service module
+├── data/                                  # Synthetic datasets
+├── scripts/                               # Workflow & ML scripts
+└── docs/                                  # Demo scripts & evaluation reports
 ```
-
----
-
-## Demo Scenarios
-
-Seed pre-configured test scenarios via the **"Seed Synthetic Demo Data"** button in the dashboard or API (`POST /api/demo/seed`):
-
-1. **Scenario 1 (Standard Recovery):** ₹2,499 failure (`incorrect_pin`) $\rightarrow$ High WhatsApp ERV $\rightarrow$ Action ready $\rightarrow$ Payment link $\rightarrow$ Recovered.
-2. **Scenario 2 (Infrastructure Downtime):** ₹899 failure (`bank_down`) $\rightarrow$ Wait & Retry policy delay.
-3. **Scenario 3 (High-Value Transaction):** ₹18,999 failure (`authentication_failed`) $\rightarrow$ Blocked by `HighValueApprovalPolicy` $\rightarrow$ Manual review required.
-4. **Scenario 4 (Fraud Flag):** ₹4,999 failure (`fraud_suspected`) $\rightarrow$ Blocked by `FraudRiskPolicy` $\rightarrow$ `DO_NOT_RETRY`.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**.
