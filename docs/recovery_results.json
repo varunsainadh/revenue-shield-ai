@@ -1,0 +1,23 @@
+{
+  "batch_size": 250,
+  "total_at_risk_inr": 1896750.0,
+  "total_recovered_inr": 0.0,
+  "recovery_rate_pct": 0.0,
+  "case_recovery_rate_pct": 0.0,
+  "cases_recovered": 0,
+  "cases_escalated_manual_review": 59,
+  "cases_blocked_by_policy": 17,
+  "cases_failed": 0,
+  "channel_recoveries": {
+    "EMAIL": 0,
+    "WHATSAPP": 0,
+    "VOICE": 0
+  },
+  "channel_recovered_amount_inr": {
+    "EMAIL": 0.0,
+    "WHATSAPP": 0.0,
+    "VOICE": 0.0
+  },
+  "reason_recovered_amount_inr": {},
+  "average_time_to_recovery_sec": 42
+}

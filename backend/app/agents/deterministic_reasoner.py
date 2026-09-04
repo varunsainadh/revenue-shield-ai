@@ -118,3 +118,42 @@ class DeterministicReasoner:
             "risk_level": risk_level,
             "reason": reason
         }
+
+    @staticmethod
+    def parse_hinglish_voice_intent(user_transcript: str) -> Dict[str, Any]:
+        """
+        Priority 7 (Track 03): Hinglish Code-Switching Voice Recovery Parser.
+        Parses spoken Hinglish customer responses into structured recovery intents and PTP dates.
+        """
+        text = user_transcript.lower()
+
+        intent = "UNKNOWN"
+        ptp_days = None
+        extracted_reason = None
+
+        # PTP & Schedule Promises
+        if any(w in text for w in ["friday", "kal", "tomorrow", "parso", "subah", "shaam", "pay kar dunga", "pay kar dungi", "payment kar dunga", "kardoonga"]):
+            intent = "PROMISE_TO_PAY"
+            if "friday" in text:
+                ptp_days = 2
+            elif "parso" in text:
+                ptp_days = 2
+            else:
+                ptp_days = 1
+
+        # Failure Intent Clarification
+        if any(w in text for w in ["passcode", "pin galat", "incorrect pin", "pin bhool gaya"]):
+            extracted_reason = "incorrect_pin"
+        elif any(w in text for w in ["server down", "bank down", "server issue"]):
+            extracted_reason = "bank_down"
+        elif any(w in text for w in ["balance nahi hai", "paisa nahi hai", "low balance", "paise nahi"]):
+            extracted_reason = "insufficient_funds"
+
+        return {
+            "transcript": user_transcript,
+            "intent": intent,
+            "ptp_delay_days": ptp_days,
+            "extracted_reason": extracted_reason,
+            "parsed_hinglish": True
+        }
+

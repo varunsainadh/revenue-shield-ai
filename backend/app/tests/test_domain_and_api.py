@@ -57,6 +57,12 @@ def test_deterministic_erv_scoring():
     assert res["channel_scores"]["whatsapp"]["erv"] > 0
     assert res["recommended_channel"] in ["EMAIL", "WHATSAPP", "VOICE"]
 
+def test_hinglish_voice_intent_parser():
+    res = DeterministicReasoner.parse_hinglish_voice_intent("Friday ko pay kar dunga")
+    assert res["intent"] == "PROMISE_TO_PAY"
+    assert res["ptp_delay_days"] == 2
+    assert res["parsed_hinglish"] is True
+
 def test_api_health():
     from fastapi.testclient import TestClient
     from app.database import init_db
