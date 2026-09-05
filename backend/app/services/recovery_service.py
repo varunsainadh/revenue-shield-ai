@@ -238,22 +238,59 @@ class RecoveryService:
         self.db.commit()
         self.db.refresh(case)
 
+        # Dispatch via LiveOutreachService (gated behind LIVE_OUTREACH_ENABLED)
+        from app.services.live_outreach_service import LiveOutreachService
+        channel_to_use = (case.recommended_channel or "WHATSAPP").upper()
+        if channel_to_use == "EMAIL":
+            outreach_res = LiveOutreachService.send_email(
+                to_email=f"{case.customer_id}@example.com",
+                customer_name=case.customer_id,
+                amount=case.amount,
+                failure_reason=case.failure_reason,
+                payment_link_url=plink.url,
+                case_id=case.id
+            )
+        elif channel_to_use == "VOICE":
+            outreach_res = LiveOutreachService.initiate_voice_call(
+                to_phone="+919876543210",
+                customer_name=case.customer_id,
+                amount=case.amount,
+                failure_reason=case.failure_reason,
+                payment_link_url=plink.url,
+                case_id=case.id
+            )
+        else:
+            outreach_res = LiveOutreachService.send_whatsapp(
+                to_phone="+919876543210",
+                customer_name=case.customer_id,
+                amount=case.amount,
+                failure_reason=case.failure_reason,
+                payment_link_url=plink.url,
+                case_id=case.id
+            )
+
         AuditService.log_event(
             db=self.db,
             event_type=AuditEventType.RECOVERY_MESSAGE_SENT,
-            action=f"Recovery intervention sent via {case.recommended_channel} with payment link",
+            action=f"Recovery intervention sent via {channel_to_use} (Status: {outreach_res.get('status')})",
             case_id=case.id,
             previous_state=CaseState.PENDING_RECOVERY.value,
             new_state=CaseState.WAITING_PAYMENT.value,
-            metadata={"payment_link_url": plink.url, "channel": case.recommended_channel, "attempt": case.attempt_number}
+            metadata={
+                "payment_link_url": plink.url, 
+                "channel": channel_to_use, 
+                "attempt": case.attempt_number,
+                "outreach_status": outreach_res.get("status")
+            }
         )
 
         return {
             "status": case.status,
             "executed": True,
-            "channel": case.recommended_channel,
+            "channel": channel_to_use,
             "payment_link_url": plink.url,
-            "attempt_number": case.attempt_number
+            "attempt_number": case.attempt_number,
+            "outreach_status": outreach_res.get("status")
         }
 
     def process_payment_success(self, case_id: str, channel_override: Optional[str] = None) -> RecoveryCaseModel:

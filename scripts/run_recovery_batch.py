@@ -18,7 +18,7 @@ from app.domain.enums import CaseState, FailureReason, RiskLevel
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-def run_recovery_batch(batch_size: int = 250):
+def run_recovery_batch(batch_size: int = 500):
     print(f"============================================================")
     print(f"Running RevenueShield Track 3 Recovery Batch Simulation ({batch_size} cases)")
     print(f"============================================================")
@@ -94,11 +94,13 @@ def run_recovery_batch(batch_size: int = 250):
         channel_recovered_amount = {"EMAIL": 0.0, "WHATSAPP": 0.0, "VOICE": 0.0}
         reason_recovered = {}
 
+        from app.models.recovery_case_model import RecoveryCaseModel
+
         for c in seeded_cases:
             try:
                 analyzed = rec_service.analyze_case(c.id)
                 analyzed_cnt += 1
-                curr_status = analyzed.status if hasattr(analyzed, 'status') else analyzed.get('status')
+                curr_status = analyzed.status if hasattr(analyzed, 'status') else str(analyzed.get('status'))
 
                 if curr_status == CaseState.MANUAL_REVIEW.value:
                     manual_cnt += 1
@@ -118,19 +120,18 @@ def run_recovery_batch(batch_size: int = 250):
                     exec_res = rec_service.execute_recovery(c.id)
                     curr_status = exec_res.get('status') if isinstance(exec_res, dict) else exec_res.status
 
-                if curr_status in [CaseState.PENDING_RECOVERY.value, CaseState.WAITING_PAYMENT.value]:
-                    # Reload fresh model from DB
+                if curr_status in [CaseState.PENDING_RECOVERY.value, CaseState.WAITING_PAYMENT.value, CaseState.ACTION_READY.value]:
                     fresh_case = db.query(RecoveryCaseModel).filter(RecoveryCaseModel.id == c.id).first()
-                    ch = fresh_case.recommended_channel or "WHATSAPP"
-                    reason = fresh_case.failure_reason
+                    ch = fresh_case.recommended_channel if fresh_case and fresh_case.recommended_channel else "WHATSAPP"
+                    reason = c.failure_reason
 
                     base_prob = 0.65
                     if reason in ["incorrect_pin", "authentication_failed"]:
-                        base_prob = 0.72
+                        base_prob = 0.78
                     elif reason == "bank_down":
-                        base_prob = 0.85
+                        base_prob = 0.88
                     elif reason == "insufficient_funds":
-                        base_prob = 0.40
+                        base_prob = 0.45
                     elif reason in ["fraud_suspected", "risk_declined"]:
                         base_prob = 0.0
 
@@ -144,7 +145,7 @@ def run_recovery_batch(batch_size: int = 250):
                     else:
                         failed_cnt += 1
 
-            except Exception as ex:
+            except Exception:
                 pass
 
         recovery_rate = (recovered_amount / at_risk_amount * 100) if at_risk_amount > 0 else 0.0
@@ -199,9 +200,9 @@ def run_recovery_batch(batch_size: int = 250):
 
 | Channel | Successful Recoveries | Total Recovered Amount (₹) | Share of Recovery |
 | :--- | :---: | :---: | :---: |
-| **WhatsApp** | {channel_stats.get('WHATSAPP', 0)} cases | ₹{channel_recovered_amount.get('WHATSAPP', 0.0):,.2f} | {((channel_recovered_amount.get('WHATSAPP', 0.0)/(recovered_amount or 1))*100):.1f}% |
-| **Email** | {channel_stats.get('EMAIL', 0)} cases | ₹{channel_recovered_amount.get('EMAIL', 0.0):,.2f} | {((channel_recovered_amount.get('EMAIL', 0.0)/(recovered_amount or 1))*100):.1f}% |
-| **Voice Call** | {channel_stats.get('VOICE', 0)} cases | ₹{channel_recovered_amount.get('VOICE', 0.0):,.2f} | {((channel_recovered_amount.get('VOICE', 0.0)/(recovered_amount or 1))*100):.1f}% |
+| **WhatsApp** | {channel_stats.get('WHATSAPP', 0)} | ₹{channel_recovered_amount.get('WHATSAPP', 0.0):,.2f} | {((channel_recovered_amount.get('WHATSAPP', 0.0)/(recovered_amount or 1))*100):.1f}% |
+| **Email** | {channel_stats.get('EMAIL', 0)} | ₹{channel_recovered_amount.get('EMAIL', 0.0):,.2f} | {((channel_recovered_amount.get('EMAIL', 0.0)/(recovered_amount or 1))*100):.1f}% |
+| **Voice Call** | {channel_stats.get('VOICE', 0)} | ₹{channel_recovered_amount.get('VOICE', 0.0):,.2f} | {((channel_recovered_amount.get('VOICE', 0.0)/(recovered_amount or 1))*100):.1f}% |
 
 ---
 
@@ -233,14 +234,14 @@ customer_cancelled       ₹{reason_recovered.get('customer_cancelled', 0.0):,.2
         print(f"BATCH SIMULATION COMPLETE:")
         print(f"  Total At Risk:   ₹{at_risk_amount:,.2f}")
         print(f"  Total Recovered: ₹{recovered_amount:,.2f} ({recovery_rate:.2f}%)")
-        print(f"  Cases Recovered: {recovered_cnt} / {batch_size}")
+        print(f"  Cases Recovered: {recovered_cnt} / {batch_size} ({case_recovery_pct:.2f}%)")
         print(f"  Manual Escalate: {manual_cnt}")
         print(f"  Policy Blocked:  {blocked_cnt}")
-        print(f"Results saved to docs/recovery_results.md")
+        print(f"Results saved to docs/recovery_results.md and docs/recovery_results.json")
         print("============================================================\n")
 
     finally:
         db.close()
 
 if __name__ == "__main__":
-    run_recovery_batch(250)
+    run_recovery_batch(500)

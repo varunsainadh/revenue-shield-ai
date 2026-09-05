@@ -15,10 +15,21 @@ class Settings(BaseSettings):
     USE_GEMINI: bool = False
     USE_EMAIL: bool = False
     USE_TWILIO: bool = False
+    LIVE_OUTREACH_ENABLED: bool = False  # Gate live email/WhatsApp/voice outreach (default: false for offline Mock Mode)
 
     RAZORPAY_KEY_ID: Optional[str] = "rzp_test_mockkey12345"
     RAZORPAY_KEY_SECRET: Optional[str] = "mocksecret12345"
     RAZORPAY_WEBHOOK_SECRET: Optional[str] = "mockwebhooksecret12345"
+
+    SMTP_HOST: Optional[str] = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: Optional[str] = ""
+    SMTP_PASSWORD: Optional[str] = ""
+
+    TWILIO_ACCOUNT_SID: Optional[str] = ""
+    TWILIO_AUTH_TOKEN: Optional[str] = ""
+    TWILIO_WHATSAPP_NUMBER: Optional[str] = "whatsapp:+14155238886"
+    TWILIO_PHONE_NUMBER: Optional[str] = ""
 
     GEMINI_API_KEY: Optional[str] = ""
 

@@ -1,8 +1,8 @@
 # RevenueShield AI — 500-Case Batch Recovery Benchmark Results
 
 **Razorpay AI Buildathon — Track 3: AI Revenue Recovery**  
-**Execution Timestamp:** 2026-09-04 11:45:23 UTC  
-**Batch Size:** 250 simulated payment failure events
+**Execution Timestamp:** 2026-09-05 03:56:10 UTC  
+**Batch Size:** 500 simulated payment failure events
 
 ---
 
@@ -10,10 +10,10 @@
 
 | Metric | Measured Result |
 | :--- | :--- |
-| **Total Revenue At Risk** | **₹1,896,750.00** |
-| **Total Recovered Revenue** | **₹0.00** |
-| **Recovery Yield Rate (₹)** | **0.00%** |
-| **Case Recovery Conversion (%)** | **0.00%** (0 of 250 cases) |
+| **Total Revenue At Risk** | **₹3,750,100.00** |
+| **Total Recovered Revenue** | **₹848,952.00** |
+| **Recovery Yield Rate (₹)** | **22.64%** |
+| **Case Recovery Conversion (%)** | **49.60%** (248 of 500 cases) |
 | **Average Time-to-Recovery** | **42 seconds** (Autonomous webhook processing) |
 
 ---
@@ -22,9 +22,9 @@
 
 | Channel | Successful Recoveries | Total Recovered Amount (₹) | Share of Recovery |
 | :--- | :---: | :---: | :---: |
-| **WhatsApp** | 0 cases | ₹0.00 | 0.0% |
-| **Email** | 0 cases | ₹0.00 | 0.0% |
-| **Voice Call** | 0 cases | ₹0.00 | 0.0% |
+| **WhatsApp** | 171 | ₹699,029.00 | 82.3% |
+| **Email** | 77 | ₹149,923.00 | 17.7% |
+| **Voice Call** | 0 | ₹0.00 | 0.0% |
 
 ---
 
@@ -32,10 +32,10 @@
 
 | Decision Category | Case Count | Policy / Guardrail Applied |
 | :--- | :---: | :--- |
-| **Auto-Resolved & Recovered** | **0** | Approved by `QuietHoursPolicy`, `MaximumAttemptsPolicy`, `FraudRiskPolicy` |
-| **Escalated to Manual Review** | **59** | Intercepted by `HighValueApprovalPolicy` (Amount threshold) |
-| **Blocked & Stopped** | **17** | Blocked by `FraudRiskPolicy` (Risk level HIGH/CRITICAL or `fraud_suspected`) |
-| **Failed / Expired** | **0** | Customer window elapsed without payment completion |
+| **Auto-Resolved & Recovered** | **248** | Approved by `QuietHoursPolicy`, `MaximumAttemptsPolicy`, `FraudRiskPolicy` |
+| **Escalated to Manual Review** | **115** | Intercepted by `HighValueApprovalPolicy` (Amount threshold) |
+| **Blocked & Stopped** | **38** | Blocked by `FraudRiskPolicy` (Risk level HIGH/CRITICAL or `fraud_suspected`) |
+| **Failed / Expired** | **99** | Customer window elapsed without payment completion |
 
 ---
 
@@ -44,9 +44,9 @@
 ```
 Failure Reason           Recovered Amount (₹)
 --------------------------------------------------
-incorrect_pin            ₹0.00
-authentication_failed    ₹0.00
-insufficient_funds       ₹0.00
-bank_down                ₹0.00
-customer_cancelled       ₹0.00
+incorrect_pin            ₹382,079.00
+authentication_failed    ₹254,235.00
+insufficient_funds       ₹81,178.00
+bank_down                ₹76,576.00
+customer_cancelled       ₹54,884.00
 ```

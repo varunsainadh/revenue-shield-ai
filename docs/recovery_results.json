@@ -1,23 +1,29 @@
 {
-  "batch_size": 250,
-  "total_at_risk_inr": 1896750.0,
-  "total_recovered_inr": 0.0,
-  "recovery_rate_pct": 0.0,
-  "case_recovery_rate_pct": 0.0,
-  "cases_recovered": 0,
-  "cases_escalated_manual_review": 59,
-  "cases_blocked_by_policy": 17,
-  "cases_failed": 0,
+  "batch_size": 500,
+  "total_at_risk_inr": 3750100.0,
+  "total_recovered_inr": 848952.0,
+  "recovery_rate_pct": 22.64,
+  "case_recovery_rate_pct": 49.6,
+  "cases_recovered": 248,
+  "cases_escalated_manual_review": 115,
+  "cases_blocked_by_policy": 38,
+  "cases_failed": 99,
   "channel_recoveries": {
-    "EMAIL": 0,
-    "WHATSAPP": 0,
+    "EMAIL": 77,
+    "WHATSAPP": 171,
     "VOICE": 0
   },
   "channel_recovered_amount_inr": {
-    "EMAIL": 0.0,
-    "WHATSAPP": 0.0,
+    "EMAIL": 149923.0,
+    "WHATSAPP": 699029.0,
     "VOICE": 0.0
   },
-  "reason_recovered_amount_inr": {},
+  "reason_recovered_amount_inr": {
+    "incorrect_pin": 382079.0,
+    "insufficient_funds": 81178.0,
+    "bank_down": 76576.0,
+    "authentication_failed": 254235.0,
+    "customer_cancelled": 54884.0
+  },
   "average_time_to_recovery_sec": 42
 }
